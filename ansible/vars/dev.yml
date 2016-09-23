@@ -1,0 +1,51 @@
+# vars for initial
+hostname: sample.local
+packages: [
+  git-core,
+  curl,
+  wget,
+  htop,
+  python-psycopg2,
+  libpq-dev,
+  unzip,
+  zip,
+  expect-dev,
+  mc
+]
+
+# vars for Nginx
+nginx_php_unix_socket: /var/run/php/php7.0-fpm.sock
+
+# hosts
+nginx_vhosts: [
+    { server_name: '_', root: '/var/www/yii2-app-advanced-master', template: 'catch_all'},
+    { server_name: 'db.192.168.38.18.local', root: '/usr/share/phpmyadmin', template: 'php'},
+    { server_name: '192.168.38.18.local',  root: '/var/www/yii2-app-advanced-master/frontend/web', template: 'yii'},
+]
+
+# vars for php5-ubuntu
+php5_file_uploads: On
+php5_max_file_uploads: 25
+php5_packages: [
+    php5,
+    php5-fpm,
+    php5-dev,
+    php5-cli,
+    php5-pgsql,
+    php5-mysql,
+    php5-curl,
+    php5-gd,
+    php5-mcrypt
+]
+
+# vars for mariadb-10-1
+mariadb:
+    root_password: pass
+    user: pet
+    password: petpass
+    databases: [
+        ptt_pet
+    ]
+
+# vars for phpmyadmin
+mysql_root_pass: "{{ mariadb.root_password }}"

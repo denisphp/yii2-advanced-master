@@ -1,0 +1,48 @@
+#!/bin/bash
+#configuration settings
+DB_USER={{ backup_db_user }}
+DB_PASS={{ backup_db_pass }}
+DB_HOST={{ backup_db_host }}
+TEMP_DIR={{ backup_backups_dir }}
+BACKUPS_DAY=`date +%d-%b-%Y`
+OLD_BACKUPS_DAY=`date -d '-{{ backup_expire_period }}' +%d-%b-%Y`
+
+#Amazon S3 configuration settings
+AMAZON_BUCKET={{ backup_amazon_bucket }}
+AMAZON_BUCKET_DIR={{ backup_amazon_bucket_dir }}
+AMAZON_BUCKET_REGION={{ backup_amazon_bucket_location }}
+
+#Google Cloud Storage configuration settings
+GS_BUCKET={{ backup_gs_bucket }}
+
+#hash generation
+SOLT=`openssl rand 100000 | sha1sum | awk -F ' ' '{print $1}'`
+HASH=`date +%s%N$SOLT | md5sum | awk '{print $1}' `
+####################################
+
+if [ ! -d "$TEMP_DIR/$BACKUPS_DAY/$HASH" ]; then
+    mkdir -p $TEMP_DIR/$BACKUPS_DAY/$HASH
+fi
+
+echo 'Creating database backups...'
+mysqldump -u$DB_USER -h$DB_HOST -p$DB_PASS --databases $(mysql -u$DB_USER -h$DB_HOST -p$DB_PASS -N information_schema -e "SELECT DISTINCT(TABLE_SCHEMA) FROM tables WHERE TABLE_SCHEMA LIKE '{{ backup_db_prefix }}'") > $TEMP_DIR/$BACKUPS_DAY/$HASH/backup.sql
+
+tar -zcvf $TEMP_DIR/$BACKUPS_DAY/$HASH/mysql_backup.tar.gz $TEMP_DIR/$BACKUPS_DAY/$HASH/backup.sql
+
+if [[ -n "$AMAZON_BUCKET" && -n "$AMAZON_BUCKET_REGION" && -n "$AMAZON_BUCKET_DIR" ]]; then
+    echo 'Transferring backup to Amazon S3...'
+
+    EXPIRES=$(date -d "+{{ backup_amazon_expire_period }}" +"%a, %d %b %Y 00:00:01 GMT")
+    s3cmd --bucket-location=$AMAZON_BUCKET_REGION --guess-mime-type --add-header="Expires:$EXPIRES" put $TEMP_DIR/$BACKUPS_DAY/$HASH/mysql_backup.tar.gz s3://$AMAZON_BUCKET/$AMAZON_BUCKET_DIR/$BACKUPS_DAY/$HASH/
+fi
+
+
+if [[ -n "$GS_BUCKET" ]]; then
+    echo 'Transferring backup to Google Storage...'
+
+    gsutil cp $TEMP_DIR/$BACKUPS_DAY/$HASH/mysql_backup.tar.gz gs://$GS_BUCKET/$BACKUPS_DAY/$HASH/
+fi
+
+rm $TEMP_DIR/$BACKUPS_DAY/$HASH/backup.sql
+rm $TEMP_DIR/$OLD_BACKUPS_DAY -Rf
+

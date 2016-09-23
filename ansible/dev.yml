@@ -1,0 +1,14 @@
+- hosts: dev
+  sudo: true
+  gather_facts: true
+  vars_files:
+    - "vars/dev.yml"
+  roles:
+#    - initial
+    - nginx
+#    - php5-ubuntu
+#    - mariadb-10-1
+#    - phpmyadmin
+#    - composer
+#    - prepare-deploy-pack
+#    - deploy

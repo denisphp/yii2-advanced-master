@@ -1,0 +1,43 @@
+---
+# tasks file for prepare-deploy-pack
+
+- name: remove previous cloned repo
+  file: path={{ prepare_tmp_project_dir }} state=absent
+  delegate_to: 127.0.0.1
+
+- name: clone repo
+  git: repo={{ prepare_git_repo }} dest={{ prepare_tmp_project_dir }} version={{ prepare_branch }} accept_hostkey=True depth=1
+  sudo: no
+  delegate_to: 127.0.0.1
+
+- name: copy yuicompressor.jar
+  copy: src=../files/yuicompressor.jar dest={{ prepare_tmp_project_dir }}/yuicompressor.jar mode=0755
+  when: prepare_compress
+  delegate_to: 127.0.0.1
+
+- name: minify js, css files
+  shell: for file in `find {{ prepare_tmp_project_dir }}/{{item.dir}} -name "*.{{item.type}}" ! -name "*min.{{item.type}}" ! -name "*pack.{{item.type}}"`; do echo "Compressing $file "; java -jar {{ prepare_tmp_project_dir }}/yuicompressor.jar --type {{item.type}} -o $file $file; done
+  with_items: prepare_compress_files
+  when: prepare_compress
+  delegate_to: 127.0.0.1
+
+- name: composer install
+  composer: working_dir={{ prepare_tmp_project_dir }}
+  when: prepare_install_composer
+  delegate_to: 127.0.0.1
+
+- name: remove development files
+  file: path="{{ prepare_tmp_project_dir }}/{{item}}" state=absent
+  with_items: prepare_remove_files
+  ignore_errors: yes
+  delegate_to: 127.0.0.1
+
+#  Uncomment for Yii2
+#- name: init yii2
+#  shell: chdir="{{ prepare_tmp_project_dir }}" ./init --env={{ env }} --overwrite=All
+#  when: env
+#  delegate_to: 127.0.0.1
+
+- name: pack project
+  command: chdir="{{ prepare_tmp_project_dir }}/../" tar -zcvf {{ prepare_hostname }}.tar.gz  -C {{ prepare_tmp_project_dir }} .
+  delegate_to: 127.0.0.1

@@ -1,0 +1,10 @@
+---
+# tasks file for backup-mysql
+
+- name: update script for backups
+  template: src="{{ backup_template_src_file }}" dest={{ backup_install_dir }}backup.sh owner=root mode=0755
+
+- name: do backup.sh runnable
+  shell: sudo chmod +x {{ backup_install_dir }}backup.sh
+
+- cron: name="Do backup" minute="{{ backup_cron_minute }}" hour="{{ backup_cron_hour }}" job="{{ backup_install_dir }}backup.sh"

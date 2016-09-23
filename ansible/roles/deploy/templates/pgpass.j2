@@ -1,0 +1,3 @@
+# hostname:port:database:username:password
+
+{{ deploy_sql_dump_host }}:{{ deploy_sql_dump_port if deploy_sql_dump_port else '5432' }}:*:{{ deploy_sql_dump_user }}:{{ deploy_sql_dump_user_password }}
