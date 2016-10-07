@@ -6,9 +6,9 @@
   roles:
     - initial
     - nginx
-    - php5-ubuntu
-    - mariadb-10-1
-    - phpmyadmin
-    - composer
+#    - php5-ubuntu
+#    - mariadb-10-1
+#    - phpmyadmin
+#    - composer
     - prepare-deploy-pack
     - deploy
