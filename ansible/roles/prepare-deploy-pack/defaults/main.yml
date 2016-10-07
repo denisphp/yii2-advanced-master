@@ -2,10 +2,10 @@
 # defaults file for prepare-deploy-pack
 
 prepare_hostname: sample.local # "{{ hostname }}"
-prepare_project_name: yii2-app-advanced-master # Folder name without /var/www/
+prepare_project_name: yii2-advanced-master # Folder name without /var/www/
 prepare_compress: true # Compress JS & CSS files
 prepare_tmp_project_dir: /tmp/sample.local
-prepare_git_repo: git@gitlab.mobidev.biz:web/projectName.git
+prepare_git_repo: git@github.com:denisphp/yii2-advanced-master.git
 prepare_branch: dev
 prepare_compress_files: [
     { dir: 'frontend/web/js/', type: 'js'},

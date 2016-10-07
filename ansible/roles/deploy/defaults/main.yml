@@ -1,11 +1,11 @@
 ---
 # defaults file for deploy
 
-deploy_name_prepare_pack: pack.tar.gz # "{{ prepare_hostname }}.tar.gz"
+deploy_name_prepare_pack: sample.local.tar.gz # "{{ prepare_hostname }}.tar.gz"
 deploy_src_prepare_pack: /tmp # "{{ prepare_tmp_project_dir }}/.."
 deploy_remove_prepare_pack: true # remove prepeared project pack after copy
 deploy_shared_folders: [] # every element must be a folder. Relative path from project WITHOUT last slash "/"!
-deploy_project_name: projectName # "{{ prepare_project_name }}" # Folder
+deploy_project_name: yii2-advanced-master # "{{ prepare_project_name }}" # Folder
 deploy_install_composer: false
 deploy_stored_releases: 5
 deploy_folder_permissions: 764 # 777
