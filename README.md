@@ -79,6 +79,12 @@ First of all, read docs: <https://www.vagrantup.com/docs/getting-started/up.html
 
 *PS: Go to your project folder before running command!*
 
+***Now you should be able to use resources***:
+- http://db.advanced-master.local
+- http://advanced-master.local
+- http://api.advanced-master.local
+- http://backend.advanced-master.local
+
 License
 -------
 
