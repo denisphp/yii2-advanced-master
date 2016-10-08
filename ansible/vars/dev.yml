@@ -24,7 +24,7 @@ nginx_vhosts: [
     { server_name: 'db.advanced-master.local', root: '/usr/share/phpmyadmin', template: 'php'},
     { server_name: 'advanced-master.local',  root: '/var/www/yii2-advanced-master/current/frontend/web', template: 'yii'},
     { server_name: 'api.advanced-master.local',  root: '/var/www/yii2-advanced-master/current/api/web', template: 'yii'},
-    { server_name: 'backend.advanced-master.local',  root: '/var/www/yii2-advanced-master/current/backend/web', template: 'yii'},
+    { server_name: 'admin.advanced-master.local',  root: '/var/www/yii2-advanced-master/current/backend/web', template: 'yii'},
 ]
 
 # vars for php5-ubuntu
