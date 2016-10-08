@@ -8,21 +8,21 @@ vm:
 #  memory: "auto" # For autodetect (1/4 system memory)
   memory: "auto"
   cpuexecutioncap: "50"
-  name: "sample"
+  name: "advanced-master.local"
 sync:
   synced_folder: "." # or "/var/www/yii2-app-advanced-master"
-  vagrant_folder: "/var/www/yii2-advanced-master/" # or "/var/www/<project-name>"
+  vagrant_folder: "/vagrant" # or "/var/www/<project-name>"
   second_synced_folder: ""
   second_vagrant_folder: ""
 network:
-  private_ip: "192.168.38.18"
+  private_ip: "192.168.38.38"
   http_port: 8888
 host:
-  name: "sample.local"
+  name: "advanced-master.local"
   aliases: [
-    "db.sample.local",
-    "api.sample.local",
-    "admin.sample.local"
+    "db.advanced-master.local",
+    "api.advanced-master.local",
+    "admin.advanced-master.local"
   ]
 ansible:
   playbook: "ansible/dev.yml"

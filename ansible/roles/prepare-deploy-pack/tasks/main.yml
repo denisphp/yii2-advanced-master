@@ -32,11 +32,9 @@
   ignore_errors: yes
   delegate_to: 127.0.0.1
 
-#  Uncomment for Yii2
-#- name: init yii2
-#  shell: chdir="{{ prepare_tmp_project_dir }}" ./init --env={{ env }} --overwrite=All
-#  when: env
-#  delegate_to: 127.0.0.1
+- name: yii2 init
+  shell: chdir="{{ prepare_tmp_project_dir }}" ./init --env={{ env }} --overwrite=All
+  delegate_to: 127.0.0.1
 
 - name: pack project
   command: chdir="{{ prepare_tmp_project_dir }}/../" tar -zcvf {{ prepare_hostname }}.tar.gz  -C {{ prepare_tmp_project_dir }} .
