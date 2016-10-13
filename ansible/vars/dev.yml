@@ -54,3 +54,7 @@ mariadb:
 
 # vars for phpmyadmin
 mysql_root_pass: "{{ mariadb.root_password }}"
+
+deploy_run_user: www-data
+deploy_run_group: www-data
+deploy_folder_permissions: 764

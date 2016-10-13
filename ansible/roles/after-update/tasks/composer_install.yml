@@ -1,0 +1,2 @@
+- name: composer install
+  composer: working_dir="/var/www/{{ deploy_project_name }}"
