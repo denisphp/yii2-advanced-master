@@ -1,6 +1,7 @@
 # vars for initial
 hostname: advanced-master.local
 env: Development
+deploy_project_name: yii2-advanced-master
 
 packages: [
   git-core,
@@ -20,11 +21,11 @@ nginx_php_unix_socket: /var/run/php5-fpm.sock
 
 # hosts
 nginx_vhosts: [
-    { server_name: '_', root: '/var/www/yii2-advanced-master', template: 'catch_all'},
+#    { server_name: '_', root: '/var/www/yii2-advanced-master', template: 'catch_all'},
     { server_name: 'db.advanced-master.local', root: '/usr/share/phpmyadmin', template: 'php'},
-    { server_name: 'advanced-master.local',  root: '/var/www/yii2-advanced-master/current/frontend/web', template: 'yii'},
-    { server_name: 'api.advanced-master.local',  root: '/var/www/yii2-advanced-master/current/api/web', template: 'yii'},
-    { server_name: 'admin.advanced-master.local',  root: '/var/www/yii2-advanced-master/current/backend/web', template: 'yii'},
+    { server_name: 'advanced-master.local',  root: '/var/www/yii2-advanced-master/frontend/web', template: 'yii'},
+    { server_name: 'api.advanced-master.local',  root: '/var/www/yii2-advanced-master/api/web', template: 'yii'},
+    { server_name: 'admin.advanced-master.local',  root: '/var/www/yii2-advanced-master/backend/web', template: 'yii'},
 ]
 
 # vars for php5-ubuntu

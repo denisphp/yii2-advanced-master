@@ -10,5 +10,6 @@
     - mariadb-10-1
     - phpmyadmin
     - composer
-    - prepare-deploy-pack
-    - deploy
+#    - prepare-deploy-pack
+#    - deploy
+    - after-update

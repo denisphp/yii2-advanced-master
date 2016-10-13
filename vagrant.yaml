@@ -10,8 +10,8 @@ vm:
   cpuexecutioncap: "50"
   name: "advanced-master.local"
 sync:
-  synced_folder: "." # or "/var/www/yii2-app-advanced-master"
-  vagrant_folder: "/vagrant" # or "/var/www/<project-name>"
+  synced_folder: "/var/www/yii2-advanced-master" # or "/var/www/yii2-app-advanced-master"
+  vagrant_folder: "/var/www/yii2-advanced-master" # or "/var/www/<project-name>"
   second_synced_folder: ""
   second_vagrant_folder: ""
 network:
