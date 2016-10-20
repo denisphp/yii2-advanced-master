@@ -1,0 +1,35 @@
+<?php
+
+namespace api\modules\v1\controllers\auth;
+
+use api\components\BaseApiAction;
+use api\models\User;
+use mobidev\swagger\components\api\DataValidationHttpException;
+
+class SignUpAction extends BaseApiAction
+{
+    public $modelClass = 'api\models\User';
+    public $scenario = User::SCENARIO_CREATE_REQUEST;
+
+    public function run()
+    {
+        $model = new User(['scenario' => User::SCENARIO_CREATE]);
+        $model->username = $this->model->username;
+        $model->email = $this->model->email;
+        $model->password = $this->model->password;
+        $model->setPassword($model->password);
+        $model->generatePasswordResetToken();
+        $model->status = User::STATUS_ACTIVE;
+        if ($model->save()) {
+            \Yii::$app->session->set('userId', $model->id);
+            \Yii::$app->session->regenerateID(true);
+            return ['api_key' => \Yii::$app->session->getId(), 'user_id' => $model->id];
+        }
+        return new DataValidationHttpException($model->getErrors());
+    }
+
+    public function rules()
+    {
+        return (new User(['scenario' => $this->scenario]))->rules();
+    }
+}

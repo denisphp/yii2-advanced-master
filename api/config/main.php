@@ -21,13 +21,10 @@ return [
             'parsers' => ['application/json' => 'yii\web\JsonParser', 'text/plain' => 'yii\web\JsonParser'],
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'api\models\User',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-api', 'httpOnly' => true],
-        ],
-        'session' => [
-            // this is the name of the session cookie used for login on the api
-            'name' => 'advanced-api',
+            'enableSession' => false,
+            'loginUrl' => null
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -41,14 +38,17 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
+            'rules' => require(__DIR__ . '/urlManagerRules.php'),
         ],
-        */
+        'response' => [
+            'class' => 'api\components\ApiResponse',
+            'on beforeSend' => function ($event) {
+                \api\components\ApiResponse::beforeSend($event);
+            },
+        ],
     ],
     'params' => $params,
 ];

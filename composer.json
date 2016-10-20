@@ -12,6 +12,12 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/yii2"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mobidev-php/yii2-swagger.git"
+        }
+    ],
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.4.0",

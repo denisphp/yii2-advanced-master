@@ -21,12 +21,13 @@ use yii\web\IdentityInterface;
  * @property integer $updated_at
  * @property string $password write-only password
  */
-class User extends ActiveRecord implements IdentityInterface
+class User extends gii\User
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
 
-
+    const REDIS_API_SESSION_DATABASE = '10';
+    const REDIS_API_SESSION_KEY_PREFIX = 'session::';
     /**
      * @inheritdoc
      */
@@ -185,5 +186,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public static function calculateRedisApiSessionKey($id)
+    {
+        return self::REDIS_API_SESSION_KEY_PREFIX . $id;
     }
 }
