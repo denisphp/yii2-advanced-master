@@ -28,6 +28,9 @@ class User extends gii\User
 
     const REDIS_API_SESSION_DATABASE = '10';
     const REDIS_API_SESSION_KEY_PREFIX = 'session::';
+
+    public $password;
+
     /**
      * @inheritdoc
      */
