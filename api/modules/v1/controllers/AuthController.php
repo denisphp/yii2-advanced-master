@@ -9,6 +9,7 @@ class AuthController extends BaseApiController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
+//        $behaviors['authenticator']['except'] = ['signin', 'signup'];
         $behaviors['authenticator']['except'] = ['signin', 'signup'];
         return $behaviors;
     }
@@ -16,7 +17,7 @@ class AuthController extends BaseApiController
     public function verbs()
     {
         return [
-            'signin' => ['post'],
+//            'signin' => ['post'],
             'signup'  => ['post'],
         ];
     }
@@ -24,7 +25,7 @@ class AuthController extends BaseApiController
     public function actions()
     {
         return [
-            'signin' => 'api\modules\v1\controllers\auth\SignInAction',
+//            'signin' => 'api\modules\v1\controllers\auth\SignInAction',
             'signup' => 'api\modules\v1\controllers\auth\SignUpAction',
         ];
     }

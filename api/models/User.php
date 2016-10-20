@@ -45,6 +45,8 @@ class User extends \common\models\User implements IdentityInterface
             self::SCENARIO_CREATE_REQUEST,
             self::SCENARIO_CREATE,
         ]];
+
+        return $rules;
     }
 
     public function scenarios()
@@ -53,5 +55,7 @@ class User extends \common\models\User implements IdentityInterface
         $scenarios[self::SCENARIO_LOGIN] = ['email', 'password'];
         $scenarios[self::SCENARIO_CREATE_REQUEST] = ['username', 'email', 'password'];
         $scenarios[self::SCENARIO_CREATE] = ['username', 'email', 'password'];
+
+        return $scenarios;
     }
 }
