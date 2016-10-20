@@ -18,6 +18,10 @@ class User extends \common\models\User implements IdentityInterface
             self::SCENARIO_CREATE_REQUEST,
             self::SCENARIO_CREATE,
         ]];
+        $rules[] = [['email'], 'unique', 'on' => [
+            self::SCENARIO_CREATE_REQUEST,
+            self::SCENARIO_CREATE,
+        ]];
         $rules[] = [['username'], 'required', 'on' => [
             self::SCENARIO_CREATE_REQUEST,
             self::SCENARIO_CREATE,
