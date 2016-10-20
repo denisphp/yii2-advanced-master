@@ -4,6 +4,7 @@ namespace api\modules\v1\controllers\auth;
 
 use api\components\BaseApiAction;
 use api\models\User;
+use common\events\UserEvent;
 use mobidev\swagger\components\api\DataValidationHttpException;
 
 class SignUpAction extends BaseApiAction
@@ -23,6 +24,10 @@ class SignUpAction extends BaseApiAction
         if ($model->save()) {
             \Yii::$app->session->set('userId', $model->id);
             \Yii::$app->session->regenerateID(true);
+            $event = new UserEvent();
+            $event->userId = $model->id;
+            $event->sessionId = \Yii::$app->session->getId();
+            $model->trigger(User::EVENT_AFTER_CREATE, $event);
             return ['api_key' => \Yii::$app->session->getId(), 'user_id' => $model->id];
         }
         return new DataValidationHttpException($model->getErrors());

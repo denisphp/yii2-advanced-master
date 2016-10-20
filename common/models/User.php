@@ -4,8 +4,8 @@ namespace common\models;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
-use yii\web\IdentityInterface;
+use common\behaviors\UserBehavior;
+use common\components\RedisKey;
 
 /**
  * User model
@@ -31,6 +31,8 @@ class User extends gii\User
 
     public $password;
 
+    const EVENT_AFTER_CREATE = 'after-create';
+
     /**
      * @inheritdoc
      */
@@ -46,6 +48,7 @@ class User extends gii\User
     {
         return [
             TimestampBehavior::className(),
+            UserBehavior::className(),
         ];
     }
 
@@ -194,5 +197,16 @@ class User extends gii\User
     public static function calculateRedisApiSessionKey($id)
     {
         return self::REDIS_API_SESSION_KEY_PREFIX . $id;
+    }
+
+    /**
+     * @param string $id user id
+     * @param string $session user session id
+     * @return boolean
+     */
+    public static function addApiSessionToRedis($id, $session)
+    {
+        $key = RedisKey::userSessions($id);
+        return \Yii::$app->redis->executeCommand('SADD', [$key, $session]);
     }
 }
