@@ -1,13 +1,13 @@
-- name: Set permission chown for release
-  shell: "chown -Rf {{ deploy_run_user }}:{{ deploy_run_group }} /var/www/{{ deploy_project_name }}/"
-
-- name: Set permission chmod for release
-  shell: "chmod -Rf {{ deploy_folder_permissions }} /var/www/{{ deploy_project_name }}/"
+#- name: Set permission chown for release
+#  shell: "chown -Rf {{ deploy_run_user }}:{{ deploy_run_group }} /var/www/{{ deploy_project_name }}/"
+#
+#- name: Set permission chmod for release
+#  shell: "chmod -Rf {{ deploy_folder_permissions }} /var/www/{{ deploy_project_name }}/"
 
 #- include: composer_install.yml
 
 - name: init yii2
-  shell: cd /var/www{{ deploy_project_name }} && ./init --env={{ env }} --overwrite=All
+  shell: cd /var/www/{{ deploy_project_name }} && ./init --env={{ env }} --overwrite=All
 
 #- name: run migrations
 #  shell: cd /var/www{{ deploy_project_name }} && ./yii migrate --interactive=0
