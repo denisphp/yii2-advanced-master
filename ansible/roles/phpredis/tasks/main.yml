@@ -1,0 +1,103 @@
+---
+# tasks file for phpredis
+
+- set_fact:
+    php7_dir_exists: false
+    php5_fpm_dir_exists: false
+    php5_apache2_dir_exists: false
+    php5_cli_dir_exists: false
+
+- name: detect php version
+  shell: chdir=/tmp php -v | grep -Eow '^PHP [^ ]+'| awk '{ print $2 }' | awk -F '-' '{print $1}'
+  register: php_version_command
+
+- set_fact: php_version={{php_version_command.stdout}}
+
+- shell: if [ -d /etc/php/7.* ]; then return 0; else return 1; fi
+  register: php7_dir_exists_command
+  ignore_errors: true
+
+- set_fact: php7_dir_exists={{php7_dir_exists_command.rc == 0}}
+
+- shell: if [ -d /etc/php5/fpm/conf.d/ ]; then return 0; else return 1; fi
+  register: php5_fpm_dir_exists_command
+  ignore_errors: true
+
+- set_fact: php5_fpm_dir_exists={{php5_fpm_dir_exists_command.rc == 0}}
+
+- shell: if [ -d /etc/php5/apache2/conf.d/ ]; then return 0; else return 1; fi
+  register: php5_apache2_dir_exists_command
+  ignore_errors: true
+
+- set_fact: php5_apache2_dir_exists={{php5_apache2_dir_exists_command.rc == 0}}
+
+- shell: if [ -d /etc/php5/cli/conf.d/ ]; then return 0; else return 1; fi
+  register: php5_cli_dir_exists_command
+  ignore_errors: true
+
+- set_fact: php5_cli_dir_exists={{php5_cli_dir_exists_command.rc == 0}}
+
+- set_fact: phpredis_lib_branch=php7
+  when: php_version | version_compare('7.0', operator='>=' )
+
+- name: download PhpRedis
+  get_url: url={{phpredis_download_lib_url}}{{phpredis_lib_branch}}.zip dest=/tmp/phpredis.zip force=yes
+
+- name: compile PhpRedis
+  shell: chdir=/tmp creates=/tmp/phpredis/modules/redis.so unzip -o /tmp/phpredis.zip && mv /tmp/phpredis-* /tmp/phpredis && cd /tmp/phpredis && phpize && ./configure && make && make install
+
+- name: install PhpRedis for php 5.5 and greater
+  shell: creates=/etc/php5/mods-available/redis.ini touch /etc/php5/mods-available/redis.ini && echo extension=redis.so > /etc/php5/mods-available/redis.ini
+  when: php_version | version_compare('5.5', operator='>=' ) and php_version | version_compare('7.0', operator='<' )
+
+- name: install PhpRedis for php 5.5 and greater (Apache2)
+  shell: creates=/etc/php5/apache2/conf.d/redis.ini ln -s /etc/php5/mods-available/redis.ini /etc/php5/apache2/conf.d/
+  when: php_version | version_compare('5.5', operator='>=' ) and php_version | version_compare('7.0', operator='<' ) and php5_apache2_dir_exists
+  notify:
+    - restart apache
+
+- name: install PhpRedis for php 5.5 and greater (PHP-FPM)
+  shell: creates=/etc/php5/fpm/conf.d/redis.ini ln -s /etc/php5/mods-available/redis.ini /etc/php5/fpm/conf.d/
+  when: php_version | version_compare('5.5', operator='>=' ) and php_version | version_compare('7.0', operator='<' ) and php5_fpm_dir_exists
+  notify:
+    - restart php5-fpm
+
+- name: install PhpRedis for php 5.5 and greater (PHP CLI)
+  shell: creates=/etc/php5/cli/conf.d/redis.ini ln -s /etc/php5/mods-available/redis.ini /etc/php5/cli/conf.d/
+  when: php_version | version_compare('5.5', operator='>=' ) and php_version | version_compare('7.0', operator='<' ) and php5_cli_dir_exists
+
+- name: install PhpRedis for php lower than 5.5 (5.3 - 5.4)
+  shell: creates=/etc/php5/conf.d/redis.ini touch /etc/php5/conf.d/redis.ini && echo extension=redis.so > /etc/php5/conf.d/redis.ini
+  when: php_version | version_compare('5.5', operator='<' )
+  notify:
+    - restart php5-fpm
+    - restart apache
+
+- name: install PhpRedis for php 7.0 and greater
+  shell: creates=/etc/php/7.0/mods-available/redis.ini touch /etc/php/7.0/mods-available/redis.ini && echo extension=redis.so > /etc/php/7.0/mods-available/redis.ini
+  when: php_version | version_compare('7.0', operator='>=' )
+
+- stat: path=/etc/php/7.0/apache2/conf.d/
+  register: php_7_0_apache2_conf_d
+
+- name: install PhpRedis for php 7.0 and greater (Apache2)
+  shell: creates=/etc/php/7.0/apache2/conf.d/redis.ini ln -s /etc/php/7.0/mods-available/redis.ini /etc/php/7.0/apache2/conf.d/redis.ini
+  when: php_version | version_compare('7.0', operator='>=' ) and php_7_0_apache2_conf_d.stat.isdir is defined and php_7_0_apache2_conf_d.stat.isdir
+  notify:
+    - restart apache
+
+- stat: path=/etc/php/7.0/fpm/conf.d/
+  register: php_7_0_fpm_conf_d
+
+- name: install PhpRedis for php 7.0 and greater (PHP-FPM)
+  shell: creates=/etc/php/7.0/fpm/conf.d/redis.ini ln -s /etc/php/7.0/mods-available/redis.ini /etc/php/7.0/fpm/conf.d/redis.ini
+  when: php_version | version_compare('7.0', operator='>=' ) and php_7_0_fpm_conf_d.stat.isdir is defined and php_7_0_fpm_conf_d.stat.isdir
+  notify:
+    - restart php7.0-fpm
+
+- stat: path=/etc/php/7.0/cli/conf.d/
+  register: php_7_0_cli_conf_d
+
+- name: install PhpRedis for php 7.0 and greater (PHP CLI)
+  shell: creates=/etc/php/7.0/cli/conf.d/redis.ini ln -s /etc/php/7.0/mods-available/redis.ini /etc/php/7.0/cli/conf.d/redis.ini
+  when: php_version | version_compare('7.0', operator='>=' ) and php_7_0_cli_conf_d.stat.isdir is defined and php_7_0_cli_conf_d.stat.isdir

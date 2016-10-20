@@ -31,3 +31,11 @@
 
 - src: git@gitlab.mobidev.biz:ansible/deploy.git
   scm: git
+
+- src: git@gitlab.mobidev.biz:ansible/redis.git
+  scm: git
+  version: v1.0
+
+- src: git@gitlab.mobidev.biz:ansible/phpredis.git
+  scm: git
+  version: v1.1

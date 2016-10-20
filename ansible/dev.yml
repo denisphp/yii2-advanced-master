@@ -10,6 +10,8 @@
 #    - mariadb-10-1
 #    - phpmyadmin
 #    - composer
+    - redis
+    - phpredis
 #    - prepare-deploy-pack
 #    - deploy
     - after-update
