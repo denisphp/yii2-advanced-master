@@ -32,6 +32,7 @@ class User extends gii\User
     public $password;
 
     const EVENT_AFTER_CREATE = 'after-create';
+    const EVENT_AFTER_LOGIN = 'after-login';
 
     /**
      * @inheritdoc
@@ -88,6 +89,11 @@ class User extends gii\User
     public static function findByUsername($username)
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email]);
     }
 
     /**

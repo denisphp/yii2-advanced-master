@@ -37,6 +37,7 @@ class User extends \common\models\User implements IdentityInterface
             self::SCENARIO_CREATE_REQUEST,
             self::SCENARIO_CREATE,
         ]];
+        $rules[] = ['password', 'validatePasswordApi', 'on' => [self::SCENARIO_LOGIN]];
         $rules[] = ['username', 'string', 'min' => 3, 'on' => [
             self::SCENARIO_CREATE_REQUEST,
             self::SCENARIO_CREATE,
@@ -57,5 +58,15 @@ class User extends \common\models\User implements IdentityInterface
         $scenarios[self::SCENARIO_CREATE] = ['username', 'email', 'password'];
 
         return $scenarios;
+    }
+
+    public function validatePasswordApi()
+    {
+        $user = self::findByEmail($this->email);
+        if (!$user) {
+            $this->addError('password', 'Incorrect email or password.');
+        } elseif (!\Yii::$app->security->validatePassword($this->password, $user->password_hash)) {
+            $this->addError('password', 'Incorrect email or password.');
+        }
     }
 }

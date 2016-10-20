@@ -11,10 +11,16 @@ class UserBehavior extends Behavior
     {
         return [
             User::EVENT_AFTER_CREATE => 'afterCreate',
+            User::EVENT_AFTER_LOGIN => 'afterLogin'
         ];
     }
 
     public function afterCreate($event)
+    {
+        User::addApiSessionToRedis($event->userId, $event->sessionId);
+    }
+
+    public function afterLogin($event)
     {
         User::addApiSessionToRedis($event->userId, $event->sessionId);
     }
