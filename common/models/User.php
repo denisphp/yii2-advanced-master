@@ -96,6 +96,11 @@ class User extends gii\User
         return static::findOne(['email' => $email]);
     }
 
+    public static function findById($id)
+    {
+        return static::findOne(['id' => $id]);
+    }
+
     /**
      * Finds user by password reset token
      *

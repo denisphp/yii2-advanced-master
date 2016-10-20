@@ -69,4 +69,17 @@ class User extends \common\models\User implements IdentityInterface
             $this->addError('password', 'Incorrect email or password.');
         }
     }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        $id = \Yii::$app->session->get('userId');
+        if ($id) {
+            return static::findOne(['id' => $id]);
+        }
+    }
+
+    public function fields()
+    {
+        return ['id', 'username', 'email', 'status', 'created_at', 'updated_at'];
+    }
 }
