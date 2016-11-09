@@ -17,14 +17,15 @@ server
 	include         locations/static.conf;
     include         locations/php.conf;
 
+    {% if (item.basic_auth is defined) and (item.basic_auth is sameas true) %}
+    auth_basic "Restricted";
+    auth_basic_user_file {{ nginx_http_basic_auth_file }};
+    {% endif %}
+
     ########## Your custom locations & settings ##########
 	location / {
 		index  index.html $yii_bootstrap;
 		try_files $uri $uri/ /$yii_bootstrap?$args;
-		{% if (item.basic_auth is defined) and (item.basic_auth is sameas true) %}
-			auth_basic "Restricted";
-			auth_basic_user_file {{ nginx_http_basic_auth_file }};
-		{% endif %}
 	}
 
 	location ~ ^/(protected|framework|themes/\w+/views) {

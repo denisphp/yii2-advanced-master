@@ -1,6 +1,6 @@
 ---
 # defaults file for nginx
-nginx_version: 1.10.1
+nginx_version: "1.10.2"
 nginx_user: nginx
 nginx_group: nginx
 nginx_run_user: 'www-data'
@@ -15,12 +15,13 @@ nginx_send_timeout: 10
 nginx_fastcgi_connect_timeout: 30
 nginx_fastcgi_send_timeout: 30
 nginx_fastcgi_read_timeout: 60
-nginx_php_unix_socket: /var/run/php5-fpm.sock # use /var/run/php/php7.0-fpm.sock for php7
+nginx_php_version: "7.0" # "{{ php_v }}"
+nginx_php_unix_socket: "/var/run/php/php{{ nginx_php_version }}-fpm.sock" # use /var/run/php/php7.0-fpm.sock for php7
 nginx_ngx_ssl_bufsize: 16384 #default: 16384. Recomended: 1400
 
 # nginx modules
 nginx_include_headers_more_module: true
-nginx_headers_more_module_version: "0.30"
+nginx_headers_more_module_version: "0.31"
 nginx_headers_more_module_base_url: https://github.com/openresty/headers-more-nginx-module/archive/
 
 # HTTP Basic authentication

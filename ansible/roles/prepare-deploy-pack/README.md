@@ -13,6 +13,8 @@ Role Variables
 
 Available variables are listed below, along with default values (see [defaults/main.yml](defaults/main.yml) ):
 
+    prepare_repository_path: "/home/gitlab-runner/project" # that variable needs only for local deploy
+    prepare_delegate_to: "127.0.0.1"
     prepare_hostname: projectHostName # "{{ hostname }}"
     prepare_project_name: projectName # Folder name without /var/www/
     prepare_compress: true # Compress JS & CSS files
@@ -40,6 +42,10 @@ Available variables are listed below, along with default values (see [defaults/m
       
 - prepare_hostname: projectHostName # "{{ hostname }}" - used for name of pack.
 - prepare_project_name: projectName # Folder - must by a directory. Only name, without /var/www/
+
+If you use the Yii2 Framework you should set variable: 
+
+    yii_env: "Development"
 
 Dependencies
 ------------

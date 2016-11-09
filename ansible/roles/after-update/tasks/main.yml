@@ -9,7 +9,7 @@
 - name: init yii2
   shell: cd /var/www/{{ deploy_project_name }} && ./init --env={{ env }} --overwrite=All
 
-#- name: run migrations
-#  shell: cd /var/www{{ deploy_project_name }} && ./yii migrate --interactive=0
+- name: run migrations
+  shell: cd /var/www{{ deploy_project_name }} && ./yii migrate --interactive=0
 
 - include: crontab.yml

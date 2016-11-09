@@ -1,41 +1,44 @@
-- src: git@gitlab.mobidev.biz:ansible/initial.git
-  scm: git
-  version: v1.0
+#- src: git@gitlab.mobidev.biz:ansible/initial.git
+#  scm: git
+#  version: v2.0
+#
+#- src: git@gitlab.mobidev.biz:ansible/nginx.git
+#  scm: git
+#  version: v2.0
 
-- src: git@gitlab.mobidev.biz:ansible/composer.git
-  scm: git
-  version: v1.1
+#- src: git@gitlab.mobidev.biz:ansible/php-ubuntu.git
+#  scm: git
+#  version: v3.0
 
-- src: git@gitlab.mobidev.biz:ansible/nginx.git
-  scm: git
-  version: v1.8
+#- src: git@gitlab.mobidev.biz:ansible/mariadb-10-1.git
+#  scm: git
+#  version: v2.0
+#
+#- src: git@gitlab.mobidev.biz:ansible/phpmyadmin.git
+#  scm: git
+#  version: v2.0
 
-- src: git@gitlab.mobidev.biz:ansible/mariadb-10-1.git
-  scm: git
-  version: v1.0
+#- src: git@gitlab.mobidev.biz:ansible/composer.git
+#  scm: git
+#  version: v2.0
+#
+#- src: git@gitlab.mobidev.biz:ansible/redis.git
+#  scm: git
+#  version: v2.0
 
-- src: git@gitlab.mobidev.biz:ansible/php5-ubuntu.git
-  scm: git
-  version: v1.0
+#- src: git@gitlab.mobidev.biz:ansible/phpredis.git
+#  scm: git
+#  version: v2.1
 
-- src: git@gitlab.mobidev.biz:ansible/phpmyadmin.git
-  scm: git
-  version: v1.4
-
-- src: git@gitlab.mobidev.biz:ansible/backup-mysql.git
-  scm: git
-  version: v1.0
-
+#
+#- src: git@gitlab.mobidev.biz:ansible/backup-mysql.git
+#  scm: git
+#  version: v2.0
+#
 - src: git@gitlab.mobidev.biz:ansible/prepare-deploy-pack.git
   scm: git
+  version: v2.0
 
 - src: git@gitlab.mobidev.biz:ansible/deploy.git
   scm: git
-
-- src: git@gitlab.mobidev.biz:ansible/redis.git
-  scm: git
-  version: v1.0
-
-- src: git@gitlab.mobidev.biz:ansible/phpredis.git
-  scm: git
-  version: v1.1
+  version: v2.0

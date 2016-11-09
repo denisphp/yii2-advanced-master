@@ -21,26 +21,34 @@ nginx_php_unix_socket: /var/run/php5-fpm.sock
 
 # hosts
 nginx_vhosts: [
-    { server_name: '_', root: '/var/www/yii2-advanced-master', template: 'catch_all'},
     { server_name: 'db.advanced-master.local', root: '/usr/share/phpmyadmin', template: 'php'},
     { server_name: 'advanced-master.local',  root: '/var/www/yii2-advanced-master/frontend/web', template: 'yii'},
     { server_name: 'api.advanced-master.local',  root: '/var/www/yii2-advanced-master/api/web', template: 'yii'},
     { server_name: 'admin.advanced-master.local',  root: '/var/www/yii2-advanced-master/backend/web', template: 'yii'},
 ]
 
-# vars for php5-ubuntu
-php5_file_uploads: On
-php5_max_file_uploads: 25
-php5_packages: [
-    php5,
-    php5-fpm,
-    php5-dev,
-    php5-cli,
-    php5-pgsql,
-    php5-mysql,
-    php5-curl,
-    php5-gd,
-    php5-mcrypt
+# vars for php-ubuntu
+php_max_execution_time: '30'
+php_memory_limit: '128M'
+php_error_reporting: 'E_ALL & ~E_DEPRECATED & ~E_STRICT'
+php_display_errors: 'On' #'Off'
+php_post_max_size: '8M'
+php_file_uploads: 'On'
+php_upload_max_filesize: '2M'
+php_max_file_uploads: '20'
+php_v: "5.6"
+php_packages: [
+#    "php{{ php_v }}", # for Apache
+    "php{{ php_v }}-fpm", # for Nginx
+    "php{{ php_v }}-dev",
+    "php{{ php_v }}-cli",
+    "php{{ php_v }}-pgsql",
+    "php{{ php_v }}-mysql",
+    "php{{ php_v }}-curl",
+    "php{{ php_v }}-gd",
+    "php{{ php_v }}-mcrypt",
+    "php{{ php_v }}-mbstring",
+    "php{{ php_v }}-intl"
 ]
 
 # vars for mariadb-10-1
@@ -57,4 +65,46 @@ mysql_root_pass: "{{ mariadb.root_password }}"
 
 deploy_run_user: www-data
 deploy_run_group: www-data
-deploy_folder_permissions: 764
+deploy_folder_permissions: "0775" # "0777"
+
+# vars for prepare-deploy-pack
+prepare_hostname: advanced-master.local # "{{ hostname }}"
+prepare_project_name: yii2-advanced-master # Folder name without /var/www/
+prepare_compress: true # Compress JS & CSS files
+prepare_tmp_project_dir: /tmp/advanced-master.local
+prepare_git_repo: git@github.com:denisphp/yii2-advanced-master.git
+prepare_branch: master
+prepare_compress_files: [
+    { dir: 'frontend/web/js/', type: 'js'},
+    { dir: 'frontend/web/css/', type: 'css'}
+  ]
+prepare_install_composer: false
+prepare_remove_files: [
+    'nbproject',
+    'build',
+    'provision',
+    'ansible',
+    '.DS_Store',
+    '.gitignore',
+    '.git',
+    '.idea',
+    'yuicompressor.jar',
+    'README.md',
+    'Vagrantfile'
+  ]
+
+# vars for deploy
+deploy_name_prepare_pack: advanced-master.local.tar.gz # "{{ prepare_hostname }}.tar.gz"
+deploy_src_prepare_pack: /tmp # "{{ prepare_tmp_project_dir }}/.."
+deploy_remove_prepare_pack: true # remove prepeared project pack after copy
+deploy_shared_folders: [] # every element must be a folder. Relative path from project WITHOUT last slash "/"!
+deploy_install_composer: true
+deploy_stored_releases: 5
+deploy_path_to_php_fpm: /var/run/php5-fpm.sock # /var/run/php/php7.0-fpm.sock # For PHP7
+deploy_sql_dump_create: true
+deploy_sql_dump_is_mysql: true # For MySQL or MariaDB
+deploy_sql_dump_is_pgsql: false # For PostgreSQL
+deploy_sql_dump_host: localhost
+deploy_sql_dump_user: root
+deploy_sql_dump_user_password: pass
+deploy_sql_dump_port: 3306 # use 5432 or false for PostgreSQL

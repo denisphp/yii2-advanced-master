@@ -45,7 +45,7 @@ stripheaders() {
 }
 
 PHPFPMCLI_FILE="/tmp/php-fpm-cli.$$.php"
-CONN="/var/run/php5-fpm.sock"
+CONN="/var/run/php/php7.0-fpm.sock"
 PHPCODE=""
 init() {
   until [ -z "$1" ]; do

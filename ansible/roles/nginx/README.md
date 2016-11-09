@@ -30,7 +30,8 @@ Available variables are listed in default values (see [defaults/main.yml](defaul
 | **nginx_send_timeout**   | sets a timeout for transmitting a response to the client. See [send_timeout](http://nginx.org/en/docs/http/ngx_http_core_module.html#send_timeout)  |
 | **nginx_fastcgi_connect_timeout**   | defines a timeout for establishing a connection with a FastCGI server. See [fastcgi_connect_timeout](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_connect_timeout) |
 | **nginx_fastcgi_send_timeout**   | sets a timeout for transmitting a request to the FastCGI server. See [fastcgi_send_timeout](http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html#fastcgi_send_timeout) |
-| **nginx_php_unix_socket**   | path to php unix socket. Use /var/run/php5-fpm.sock for php 5.x and /var/run/php/php7.0-fpm.sock for php 7.x    |
+| **nginx_php_version**   | php version. Use string "7.0" or param "{{ php_v }}"    |
+| **nginx_php_unix_socket**   | path to php unix socket. Use /var/run/php/php{{major.minor}}-fpm.sock for php 5.x or 7.x    |
 
 ### nginx modules
 

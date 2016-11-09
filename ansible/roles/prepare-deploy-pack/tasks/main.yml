@@ -1,41 +1,50 @@
 ---
 # tasks file for prepare-deploy-pack
 
+- set_fact: is_local="{{ ansible_connection == 'local' }}"
+
 - name: remove previous cloned repo
-  file: path={{ prepare_tmp_project_dir }} state=absent
-  delegate_to: 127.0.0.1
+  file: path="{{ prepare_tmp_project_dir }}" state=absent
+  delegate_to: "{{ prepare_delegate_to }}"
 
 - name: clone repo
-  git: repo={{ prepare_git_repo }} dest={{ prepare_tmp_project_dir }} version={{ prepare_branch }} accept_hostkey=True depth=1
-  sudo: no
-  delegate_to: 127.0.0.1
+  git: repo="{{ prepare_git_repo }}" dest="{{ prepare_tmp_project_dir }}" version="{{ prepare_branch }}" accept_hostkey=True depth=1
+  become: no
+  when: is_local == false
+  delegate_to: "{{ prepare_delegate_to }}"
+
+- name: make copy of the project
+  shell: cp -ar "{{ prepare_repository_path }}" "{{ prepare_tmp_project_dir }}"
+  when: is_local
 
 - name: copy yuicompressor.jar
-  copy: src=../files/yuicompressor.jar dest={{ prepare_tmp_project_dir }}/yuicompressor.jar mode=0755
+  copy: src=../files/yuicompressor.jar dest="{{ prepare_tmp_project_dir }}/yuicompressor.jar" mode=0755
   when: prepare_compress
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ prepare_delegate_to }}"
 
 - name: minify js, css files
-  shell: for file in `find {{ prepare_tmp_project_dir }}/{{item.dir}} -name "*.{{item.type}}" ! -name "*min.{{item.type}}" ! -name "*pack.{{item.type}}"`; do echo "Compressing $file "; java -jar {{ prepare_tmp_project_dir }}/yuicompressor.jar --type {{item.type}} -o $file $file; done
-  with_items: prepare_compress_files
+  shell: for file in `find "{{ prepare_tmp_project_dir }}/{{item.dir}}" -name "*.{{item.type}}" ! -name "*min.{{item.type}}" ! -name "*pack.{{item.type}}"`; do echo "Compressing $file "; java -jar "{{ prepare_tmp_project_dir }}/yuicompressor.jar" --type "{{ item.type }}" -o $file $file; done
+  with_items: "{{ prepare_compress_files }}"
   when: prepare_compress
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ prepare_delegate_to }}"
 
 - name: composer install
-  composer: working_dir={{ prepare_tmp_project_dir }}
+  composer: working_dir="{{ prepare_tmp_project_dir }}"
   when: prepare_install_composer
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ prepare_delegate_to }}"
+
+- name: init yii2
+  shell: chdir="{{ prepare_tmp_project_dir }}" ./init --env="{{ yii_env }}" --overwrite=All
+  when: yii_env is defined
+  delegate_to: "{{ prepare_delegate_to }}"
 
 - name: remove development files
   file: path="{{ prepare_tmp_project_dir }}/{{item}}" state=absent
-  with_items: prepare_remove_files
+  with_items: "{{ prepare_remove_files }}"
   ignore_errors: yes
-  delegate_to: 127.0.0.1
-
-- name: yii2 init
-  shell: chdir="{{ prepare_tmp_project_dir }}" ./init --env={{ env }} --overwrite=All
-  delegate_to: 127.0.0.1
+  delegate_to: "{{ prepare_delegate_to }}"
 
 - name: pack project
-  command: chdir="{{ prepare_tmp_project_dir }}/../" tar -zcvf {{ prepare_hostname }}.tar.gz  -C {{ prepare_tmp_project_dir }} .
-  delegate_to: 127.0.0.1
+  command: chdir="{{ prepare_tmp_project_dir }}/../" tar -zcvf "{{ prepare_hostname }}.tar.gz"  -C "{{ prepare_tmp_project_dir }}" .
+  when: is_local == false
+  delegate_to: "{{ prepare_delegate_to }}"

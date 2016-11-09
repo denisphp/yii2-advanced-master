@@ -1,30 +1,38 @@
 ---
 # tasks file for deploy
 
-- set_fact:
-    deploy_first_release: true
-
 - name: get current time
   shell: date +%s
   register: deploy_current_time
+
+- set_fact:
+    deploy_first_release: true
+    is_local: "{{ansible_connection=='local'}}"
+    deploy_dest_folder: "/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}"
 
 - name: remove previous version of project
   shell: chdir="/var/www/{{ deploy_project_name }}/release" ls -t | sed -e '1,{{ deploy_stored_releases }}d' | xargs -d '\n' rm -Rf
   ignore_errors: yes
 
 - name: Create project folder
-  file: path="/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}" state=directory owner={{ deploy_run_user }} group={{ deploy_run_group }} mode={{ deploy_folder_permissions }}
+  file: path="{{ deploy_dest_folder }}" state=directory owner="{{ deploy_run_user }}" group="{{ deploy_run_group }}" mode="{{ deploy_folder_permissions }}"
+  when: is_local == false
 
 - name: Unarchive packed project
-  unarchive: src="{{ deploy_src_prepare_pack }}/{{ deploy_name_prepare_pack }}" dest="/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}/" owner={{ deploy_run_user }} group={{ deploy_run_group }} mode={{ deploy_folder_permissions }}
+  unarchive: src="{{ deploy_src_prepare_pack }}/{{ deploy_name_prepare_pack }}" dest="{{ deploy_dest_folder }}" owner="{{ deploy_run_user }}" group="{{ deploy_run_group }}" mode="{{ deploy_folder_permissions }}"
+  when: is_local == false
 
 - name: remove prepeared project pack
   file: path="{{ deploy_src_prepare_pack }}/{{ deploy_name_prepare_pack }}" state=absent
-  when: deploy_remove_prepare_pack
-  delegate_to: 127.0.0.1
+  when: deploy_remove_prepare_pack and is_local == false
+  delegate_to: "{{ deploy_delegate_to }}"
+
+- name: Copy project
+  shell: cp -ar "{{ deploy_src_prepare_pack_gitlab_ci }}" "{{ deploy_dest_folder }}"
+  when: is_local
 
 - name: composer install
-  composer: working_dir="/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}/"
+  composer: working_dir="{{ deploy_dest_folder }}"
   when: deploy_install_composer
 
 - name: be sure cgi-fcgi packages are installed
@@ -34,29 +42,29 @@
   copy: src=../files/opcache_reset dest=/tmp/opcache_reset mode=0755
 
 - name: Create directories for shared files
-  file: path="/var/www/{{ deploy_project_name }}/shared/{{ item }}/" state=directory owner={{ deploy_run_user }} group={{ deploy_run_group }} mode={{ deploy_folder_permissions }}
-  with_items: deploy_shared_folders
+  file: path="/var/www/{{ deploy_project_name }}/shared/{{ item }}/" state=directory owner="{{ deploy_run_user }}" group="{{ deploy_run_group }}" mode="{{ deploy_folder_permissions }}"
+  with_items: "{{ deploy_shared_folders }}"
 
 - name: Synchronize shared files
-  command: cp -R "/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}/{{ item }}/" "/var/www/{{ deploy_project_name }}/shared/{{item}}/../"
+  command: cp -R "{{ deploy_dest_folder }}/{{ item }}/" "/var/www/{{ deploy_project_name }}/shared/{{item}}/../"
   with_items: deploy_shared_folders
 
 - name: Remove directories for shared files from release folder
-  file: path="/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}/{{ item }}/" state=absent
-  with_items: deploy_shared_folders
+  file: path="{{ deploy_dest_folder }}/{{ item }}/" state=absent
+  with_items: "{{ deploy_shared_folders }}"
 
 - name: Create symlink for shared
-  file: src="/var/www/{{ deploy_project_name }}/shared/{{item}}/" dest="/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}/{{ item }}" state=link
-  with_items: deploy_shared_folders
+  file: src="/var/www/{{ deploy_project_name }}/shared/{{item}}/" dest="{{ deploy_dest_folder }}/{{ item }}" state=link
+  with_items: "{{ deploy_shared_folders }}"
 
 - shell: "if [ -d /var/www/{{ deploy_project_name }}/current/ ]; then return 0; else return 1; fi"
   register: deploy_current_dir_exists
   ignore_errors: true
 
-- set_fact: deploy_first_release={{deploy_current_dir_exists.rc == 1}}
+- set_fact: deploy_first_release="{{deploy_current_dir_exists.rc == 1}}"
 
 - name: Create directory for sql_dumps
-  file: path="/var/www/{{ deploy_project_name }}/current/{{ deploy_project_name }}_sqldumps/" state=directory owner={{ deploy_run_user }} group={{ deploy_run_group }} mode={{ deploy_folder_permissions }}
+  file: path="/var/www/{{ deploy_project_name }}/current/{{ deploy_project_name }}_sqldumps/" state=directory owner="{{ deploy_run_user }}" group="{{ deploy_run_group }}" mode="{{ deploy_folder_permissions }}"
   when: deploy_sql_dump_create and not deploy_first_release
 
 - name: Create MySQL/MariaDb Dump
@@ -64,10 +72,10 @@
     state=dump
     name=all
     target="/var/www/{{ deploy_project_name }}/current/{{ deploy_project_name }}_sqldumps/{{ deploy_project_name }}.sql"
-    login_host={{ deploy_sql_dump_host }}
-    login_user={{ deploy_sql_dump_user }}
-    login_password={{ deploy_sql_dump_user_password }}
-    login_port={{ deploy_sql_dump_port }}
+    login_host="{{ deploy_sql_dump_host }}"
+    login_user="{{ deploy_sql_dump_user }}"
+    login_password="{{ deploy_sql_dump_user_password }}"
+    login_port="{{ deploy_sql_dump_port }}"
   when: deploy_sql_dump_create and deploy_sql_dump_is_mysql and not deploy_sql_dump_is_pgsql and not deploy_first_release
 
 - name: Create pgpass file
@@ -97,14 +105,14 @@
   when: deploy_sql_dump_create and deploy_sql_dump_is_pgsql and not deploy_first_release
 
 - name: Set permission chown for release
-  shell: "chown -Rf {{ deploy_run_user }}:{{ deploy_run_group }} /var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}"
+  shell: "chown -Rf {{ deploy_run_user }}:{{ deploy_run_group }} {{ deploy_dest_folder }}"
 
 - name: Set permission chmod for release
-  shell: "chmod -Rf {{ deploy_folder_permissions }} /var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}"
+  shell: "chmod -Rf {{ deploy_folder_permissions }} {{ deploy_dest_folder }}"
 
 - name: Create symlink for release
-  file: src="/var/www/{{ deploy_project_name }}/release/{{ deploy_current_time.stdout }}/" dest="/var/www/{{ deploy_project_name }}/current" state=link owner={{ deploy_run_user }} group={{ deploy_run_group }} mode={{ deploy_folder_permissions }}
+  file: src="{{ deploy_dest_folder }}/" dest="/var/www/{{ deploy_project_name }}/current" state=link owner="{{ deploy_run_user }}" group="{{ deploy_run_group }}" mode="{{ deploy_folder_permissions }}"
 
 - name: Reset OpCache
-  shell: chdir="/tmp" ./opcache_reset -r 'var_dump(opcache_reset());' -connect {{ deploy_path_to_php_fpm }}
+  shell: chdir="/tmp" ./opcache_reset -r 'var_dump(opcache_reset());' -connect "{{ deploy_path_to_php_fpm }}"
   ignore_errors: yes

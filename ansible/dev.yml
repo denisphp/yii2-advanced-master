@@ -6,12 +6,12 @@
   roles:
 #    - initial
 #    - nginx
-#    - php5-ubuntu
+#    - php-ubuntu
 #    - mariadb-10-1
 #    - phpmyadmin
 #    - composer
-    - redis
-    - phpredis
+#    - redis
+#    - phpredis
 #    - prepare-deploy-pack
 #    - deploy
     - after-update
