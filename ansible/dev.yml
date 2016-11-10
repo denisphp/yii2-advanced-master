@@ -4,14 +4,14 @@
   vars_files:
     - "vars/dev.yml"
   roles:
-#    - initial
-#    - nginx
-#    - php-ubuntu
-#    - mariadb-10-1
-#    - phpmyadmin
-#    - composer
-#    - redis
-#    - phpredis
-#    - prepare-deploy-pack
-#    - deploy
+    - initial
+    - nginx
+    - php-ubuntu
+    - mariadb-10-1
+    - phpmyadmin
+    - composer
+    - redis
+    - phpredis
+    - prepare-deploy-pack
+    - deploy
     - after-update
