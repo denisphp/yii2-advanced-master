@@ -17,7 +17,9 @@ packages: [
 ]
 
 # vars for Nginx
-nginx_php_unix_socket: /var/run/php5-fpm.sock
+php_v: "5.6"
+nginx_php_version: "{{ php_v }}" # "7.0"
+nginx_php_unix_socket: "/var/run/php/php{{ nginx_php_version }}-fpm.sock" # use /var/run/php/php7.0-fpm.sock for php7
 
 # hosts
 nginx_vhosts: [
@@ -36,7 +38,7 @@ php_post_max_size: '8M'
 php_file_uploads: 'On'
 php_upload_max_filesize: '2M'
 php_max_file_uploads: '20'
-php_v: "5.6"
+
 php_packages: [
 #    "php{{ php_v }}", # for Apache
     "php{{ php_v }}-fpm", # for Nginx
