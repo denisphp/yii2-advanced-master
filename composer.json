@@ -26,7 +26,8 @@
         "yiisoft/yii2-debug": "~2.0.0",
         "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-redis": "~2.0.0",
-        "mobidev/yii2-swagger": "dev-master"
+        "mobidev/yii2-swagger": "dev-master",
+        "udokmeci/yii2-beanstalk" : "dev-master"
     },
     "require-dev": {
         "flow/jsonpath" : "0.3.*",

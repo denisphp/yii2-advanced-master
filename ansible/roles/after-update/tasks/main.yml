@@ -6,10 +6,13 @@
 
 #- include: composer_install.yml
 
-- name: init yii2
-  shell: cd /var/www/{{ deploy_project_name }} && ./init --env={{ env }} --overwrite=All
+#- name: init yii2
+#  shell: cd /var/www/{{ deploy_project_name }} && ./init --env={{ env }} --overwrite=All
+#
+#- name: run migrations
+#  shell: cd /var/www/{{ deploy_project_name }} && ./yii migrate --interactive=0
+#
+#- include: crontab.yml
 
 - name: run migrations
-  shell: cd /var/www/{{ deploy_project_name }} && ./yii migrate --interactive=0
-
-- include: crontab.yml
+  shell: cd /var/www/{{ deploy_project_name }} && ./yii worker /dev/null 2>&1 &

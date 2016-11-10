@@ -18,8 +18,19 @@ return [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['info'],
+                    'categories' => ['background'],
+                    'logFile' => '@console/runtime/logs/background/app.log',
+                ],
             ],
         ],
     ],
     'params' => $params,
+    'controllerMap' => [
+        'worker'=>[
+            'class' => 'console\controllers\WorkerController',
+        ]
+    ],
 ];

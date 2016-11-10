@@ -4,6 +4,7 @@ namespace api\modules\v1\controllers\auth;
 
 use api\components\BaseApiAction;
 use api\models\User;
+use common\components\jobs\LogJob;
 use common\events\UserEvent;
 use mobidev\swagger\components\api\DataValidationHttpException;
 
@@ -14,6 +15,10 @@ class SignUpAction extends BaseApiAction
 
     public function run()
     {
+        $job = new LogJob();
+        $job->message = 'background job success';
+        \Yii::$app->beanstalk->putInTube('tube', $job);
+        die();
         $model = new User(['scenario' => User::SCENARIO_CREATE]);
         $model->username = $this->model->username;
         $model->email = $this->model->email;
