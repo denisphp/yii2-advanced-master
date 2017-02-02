@@ -43,6 +43,9 @@ class WorkerController extends BeanstalkController
     public function actionTube($job)
     {
         $sentData = $job->getData();
+
+        Yii::getLogger()->log('beanstalk error log', Logger::LEVEL_ERROR);
+        Yii::getLogger()->log('beanstalk background info log', Logger::LEVEL_INFO, 'background');
         try {
             $job = self::deserializeJob($sentData);
 

@@ -15,4 +15,5 @@
 #    - beanstalkd
 #    - prepare-deploy-pack
 #    - deploy
-    - after-update
+#    - after-update
+    - supervisor

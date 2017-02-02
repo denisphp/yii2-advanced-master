@@ -1,0 +1,9 @@
+---
+# defaults file for supervisor
+
+supervisord_default_conf_file: supervisord.conf.j2
+supervisord_enable_inet_http_server: false
+supervisord_username: supervisor
+supervisord_password: migi7rahjo
+supervisord_host: 127.0.0.1
+supervisord_port: 9001
